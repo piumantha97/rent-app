@@ -43,16 +43,16 @@ export const OrdersTable = (props) => {
           <TableHead>
             <TableRow>
               <TableCell>
-                Order
+                Place
               </TableCell>
               <TableCell>
-                Date
+               End Date
               </TableCell>
               <TableCell>
-                Customer
+                Name
               </TableCell>
               <TableCell>
-                Status
+                Start Date
               </TableCell>
             </TableRow>
           </TableHead>

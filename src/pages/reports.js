@@ -79,7 +79,7 @@ export const Reports = () => (
             xs={12}
           >
             <Card variant="outlined">
-              <CardHeader title="Latest Orders" />
+              <CardHeader title="Upcoming Reneval" />
               <Divider />
               <OrdersTable orders={latestOrders} />
             </Card>

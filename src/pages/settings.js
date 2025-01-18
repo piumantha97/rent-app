@@ -15,13 +15,14 @@ import {
 } from '@mui/material';
 
 const companySizeOptions = ['1-10', '11-30', '31-50', '50+'];
+const placesOptions = ['B1-0','B1-2', 'B1-3', 'B1-4','B2-0','B2-1', 'B2-2', 'B2-3', ];
 
 export const Settings = () => {
   const formik = useFormik({
     initialValues: {
       companyName: 'ACME Corp LLC.',
       companySize: '1-10',
-      email: 'chen.simmons@acmecorp.com',
+      keymoney: '10000',
       fullName: 'Chen Simmons',
       jobTitle: 'Operation',
       submit: null
@@ -33,8 +34,14 @@ export const Settings = () => {
         .max(255)
         .oneOf(companySizeOptions)
         .required('Company size is required'),
-      email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+        keymoney: Yup.string().max(255).required('Key money is required'),
       fullName: Yup.string().max(255).required('Full Name is required'),
+      telephone: Yup.string()
+      .required('Telephone Number is required')
+      .matches(/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/, 'Enter a valid phone number (e.g., 123-456-7890)'),
+      monthlyRent: Yup.number()
+      .required('Monthly Rent is required')
+      .min(0, 'Monthly Rent cannot be negative'),
       jobTitle: Yup.string().max(255).required('Job name is required')
     }),
     onSubmit: async (values, helpers) => {
@@ -137,6 +144,50 @@ export const Settings = () => {
                       spacing={2}
                       sx={{ maxWidth: 420 }}
                     >
+
+<Grid
+                        item
+                        xs={12}
+                      >
+                        <TextField
+                          error={Boolean(formik.touched.companySize && formik.errors.companySize)}
+                          fullWidth
+                          helperText={formik.touched.companySize && formik.errors.companySize}
+                          label="Place Code"
+                          name="place Code"
+                          onBlur={formik.handleBlur}
+                          onChange={formik.handleChange}
+                          select
+                          value={formik.values.companySize}
+                          variant="outlined"
+                        >
+                          {placesOptions.map((placesOption) => (
+                            <MenuItem
+                              key={placesOption}
+                              value={placesOption}
+                            >
+                              {placesOption}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      </Grid>
+
+                      <Grid
+                        item
+                        xs={12}
+                      >
+                        <TextField
+                          error={Boolean(formik.touched.businessName && formik.errors.businessName)}
+                          fullWidth
+                          helperText={formik.touched.businessName && formik.errors.businessName}
+                          label="Business Name"
+                          name="businessName"
+                          onBlur={formik.handleBlur}
+                          onChange={formik.handleChange}
+                          value={formik.values.businessName}
+                          variant="outlined"
+                        />
+                      </Grid>
                       <Grid
                         item
                         xs={12}
@@ -153,81 +204,94 @@ export const Settings = () => {
                           variant="outlined"
                         />
                       </Grid>
+                      <Grid item xs={12}>
+                      <TextField
+                        error={Boolean(formik.touched.telephone && formik.errors.telephone)}
+                        fullWidth
+                        helperText={formik.touched.telephone && formik.errors.telephone}
+                        label="Telephone Number"
+                        name="telephone"
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        value={formik.values.telephone}
+                        variant="outlined"
+                        type="tel"
+                        inputProps={{
+                          pattern: "[0-9]{3}-[0-9]{3}-[0-9]{4}", // Example pattern for US phone numbers
+                          title: "Enter a phone number in the format: 123-456-7890",
+                        }}
+                      />
+                    </Grid>
+                      <Grid item xs={12}>
+                      <TextField
+                        error={Boolean(formik.touched.startDate && formik.errors.startDate)}
+                        fullWidth
+                        helperText={formik.touched.startDate && formik.errors.startDate}
+                        label="Start Date"
+                        name="startDate"
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        type="date"
+                        value={formik.values.startDate}
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true, // Ensures the label stays visible when a date is selected
+                        }}
+                      />
+                    </Grid>
+                      <Grid item xs={12}>
+                      <TextField
+                        error={Boolean(formik.touched.endDate && formik.errors.endDate)}
+                        fullWidth
+                        helperText={formik.touched.endDate && formik.errors.endDate}
+                        label="End Date"
+                        name="endtDate"
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        type="date"
+                        value={formik.values.endDate}
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true, // Ensures the label stays visible when a date is selected
+                        }}
+                      />
+                    </Grid>
                       <Grid
                         item
                         xs={12}
                       >
                         <TextField
-                          error={Boolean(formik.touched.email && formik.errors.email)}
+                          error={Boolean(formik.touched.keymoney && formik.errors.email)}
                           fullWidth
                           helperText={formik.touched.email && formik.errors.email}
-                          label="Email address"
-                          name="email"
+                          label="Key Money"
+                          name="keymoney"
                           onBlur={formik.handleBlur}
                           onChange={formik.handleChange}
-                          type="email"
-                          value={formik.values.email}
+                          type="keymoney"
+                          value={formik.values.keymoney}
                           variant="outlined"
                         />
                       </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                      >
-                        <TextField
-                          error={Boolean(formik.touched.jobTitle && formik.errors.jobTitle)}
-                          fullWidth
-                          helperText={formik.touched.jobTitle && formik.errors.jobTitle}
-                          label="Job title"
-                          name="jobTitle"
-                          onBlur={formik.handleBlur}
-                          onChange={formik.handleChange}
-                          value={formik.values.jobTitle}
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                      >
-                        <TextField
-                          error={Boolean(formik.touched.companyName && formik.errors.companyName)}
-                          fullWidth
-                          helperText={formik.touched.companyName && formik.errors.companyName}
-                          label="Company name"
-                          name="companyName"
-                          onBlur={formik.handleBlur}
-                          onChange={formik.handleChange}
-                          value={formik.values.companyName}
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                      >
-                        <TextField
-                          error={Boolean(formik.touched.companySize && formik.errors.companySize)}
-                          fullWidth
-                          helperText={formik.touched.companySize && formik.errors.companySize}
-                          label="Company size"
-                          name="companySize"
-                          onBlur={formik.handleBlur}
-                          onChange={formik.handleChange}
-                          select
-                          value={formik.values.companySize}
-                          variant="outlined"
-                        >
-                          {companySizeOptions.map((companySizeOption) => (
-                            <MenuItem
-                              key={companySizeOption}
-                              value={companySizeOption}
-                            >
-                              {companySizeOption}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      </Grid>
+
+                    <Grid item xs={12}>
+                    <TextField
+                      error={Boolean(formik.touched.monthlyRent && formik.errors.monthlyRent)}
+                      fullWidth
+                      helperText={formik.touched.monthlyRent && formik.errors.monthlyRent}
+                      label="Monthly Rent"
+                      name="monthlyRent"
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                      value={formik.values.monthlyRent}
+                      variant="outlined"
+                      type="number"
+                      inputProps={{
+                        min: 0, // Ensures no negative numbers can be entered
+                        step: "any", // Allows for decimal values if needed
+                      }}
+                    />
+                  </Grid>
                       {formik.errors.submit && (
                         <Grid
                           item
