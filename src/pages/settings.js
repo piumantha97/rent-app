@@ -13,6 +13,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import axios from 'axios';
 
 const companySizeOptions = ['1-10', '11-30', '31-50', '50+'];
 const placesOptions = ['B1-0','B1-2', 'B1-3', 'B1-4','B2-0','B2-1', 'B2-2', 'B2-3', ];
@@ -20,39 +21,45 @@ const placesOptions = ['B1-0','B1-2', 'B1-3', 'B1-4','B2-0','B2-1', 'B2-2', 'B2-
 export const Settings = () => {
   const formik = useFormik({
     initialValues: {
-      companyName: 'ACME Corp LLC.',
-      companySize: '1-10',
-      keymoney: '10000',
+      // companyName: 'ACME Corp LLC.',
+      // companySize: '1-10',
+      keyMoney: '10000',
       fullName: 'Chen Simmons',
-      jobTitle: 'Operation',
-      submit: null
+      // jobTitle: 'Operation',
+      // submit: null
     },
     validationSchema: Yup.object().shape({
-      companyName: Yup.string().max(255).required('Company name is required'),
-      companySize: Yup
-        .string()
-        .max(255)
-        .oneOf(companySizeOptions)
-        .required('Company size is required'),
-        keymoney: Yup.string().max(255).required('Key money is required'),
+      // companyName: Yup.string().max(255).required('Company name is required'),
+      // companySize: Yup
+      //   .string()
+      //   .max(255)
+      //   .oneOf(companySizeOptions)
+      //   .required('Company size is required'),
+      keyMoney: Yup.string().max(255).required('Key money is required'),
       fullName: Yup.string().max(255).required('Full Name is required'),
-      telephone: Yup.string()
-      .required('Telephone Number is required')
-      .matches(/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/, 'Enter a valid phone number (e.g., 123-456-7890)'),
+      // telephone: Yup.string()
+      // .required('Telephone Number is required'),
       monthlyRent: Yup.number()
       .required('Monthly Rent is required')
       .min(0, 'Monthly Rent cannot be negative'),
-      jobTitle: Yup.string().max(255).required('Job name is required')
+      // jobTitle: Yup.string().max(255).required('Job name is required')
     }),
     onSubmit: async (values, helpers) => {
       try {
+           // Send a POST request to your backend API
+    const response = await axios.post('http://localhost:5000/api/property', values);
+    
+    console.log('Response:', response.data);
+
         helpers.setStatus({ success: true });
         helpers.setSubmitting(false);
+        alert('Form submitted successfully!');
       } catch (err) {
         console.error(err);
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: err.message });
         helpers.setSubmitting(false);
+        alert('Failed to submit the form. Please try again.');
       }
     }
   });
@@ -90,7 +97,7 @@ export const Settings = () => {
                 color="textPrimary"
                 variant="h6"
               >
-                Account
+                 test 
               </Typography>
             </Grid>
             <Grid
@@ -154,7 +161,7 @@ export const Settings = () => {
                           fullWidth
                           helperText={formik.touched.companySize && formik.errors.companySize}
                           label="Place Code"
-                          name="place Code"
+                          name="placeCode"
                           onBlur={formik.handleBlur}
                           onChange={formik.handleChange}
                           select
@@ -204,7 +211,7 @@ export const Settings = () => {
                           variant="outlined"
                         />
                       </Grid>
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                       <TextField
                         error={Boolean(formik.touched.telephone && formik.errors.telephone)}
                         fullWidth
@@ -221,7 +228,7 @@ export const Settings = () => {
                           title: "Enter a phone number in the format: 123-456-7890",
                         }}
                       />
-                    </Grid>
+                    </Grid> */}
                       <Grid item xs={12}>
                       <TextField
                         error={Boolean(formik.touched.startDate && formik.errors.startDate)}
@@ -245,7 +252,7 @@ export const Settings = () => {
                         fullWidth
                         helperText={formik.touched.endDate && formik.errors.endDate}
                         label="End Date"
-                        name="endtDate"
+                        name="endDate"
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         type="date"
@@ -261,15 +268,15 @@ export const Settings = () => {
                         xs={12}
                       >
                         <TextField
-                          error={Boolean(formik.touched.keymoney && formik.errors.email)}
+                          error={Boolean(formik.touched.keyMoney && formik.errors.email)}
                           fullWidth
                           helperText={formik.touched.email && formik.errors.email}
                           label="Key Money"
-                          name="keymoney"
+                          name="keyMoney"
                           onBlur={formik.handleBlur}
                           onChange={formik.handleChange}
-                          type="keymoney"
-                          value={formik.values.keymoney}
+                          type="keyMoney"
+                          value={formik.values.keyMoney}
                           variant="outlined"
                         />
                       </Grid>
