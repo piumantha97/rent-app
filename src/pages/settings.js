@@ -82,7 +82,7 @@ export const Settings = () => {
             sx={{ mb: 3 }}
             variant="h4"
           >
-            Settings
+          Add New Rent
           </Typography>
           <Grid
             container
