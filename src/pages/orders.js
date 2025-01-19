@@ -14,8 +14,8 @@ import axios from "axios";
 import { AgreementsTable } from "../components/agreements-table";
 
 export const Agreements = () => {
-  const [agreements, setAgreements] = useState([]);
-  const [sortedAgreements, setSortedAgreements] = useState([]);
+  const [agreements, setAgreements] = useState([]); // Holds all agreements
+  const [filteredAgreements, setFilteredAgreements] = useState([]); // Holds filtered agreements based on search query
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
   const [query, setQuery] = useState("");
@@ -27,15 +27,11 @@ export const Agreements = () => {
         const response = await axios.get("http://localhost:5000/api/agreements");
         const data = response.data;
 
-        // Sort by recent endDate
-        const sorted = data.sort((a, b) => {
-          const dateA = new Date(a.endDate);
-          const dateB = new Date(b.endDate);
-          return dateB - dateA;
-        });
+        // Sort agreements by recent `endDate`
+        const sorted = data.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
 
-        setAgreements(data);
-        setSortedAgreements(sorted);
+        setAgreements(sorted);
+        setFilteredAgreements(sorted); // Initially, display all agreements
       } catch (error) {
         console.error("Error fetching agreements:", error);
       }
@@ -44,17 +40,20 @@ export const Agreements = () => {
     fetchAgreements();
   }, []);
 
+  // Handle search functionality
   const handleQueryChange = (event) => {
     const newQuery = event.target.value;
     setQuery(newQuery);
 
-    // Filter agreements by business name
+    // Filter agreements by `businessName`, case-insensitive
     const filtered = agreements.filter((agreement) =>
-      agreement.businessId?.businessName
-        .toLowerCase()
+      agreement.businessDetails?.businessName
+        ?.toLowerCase()
         .includes(newQuery.toLowerCase())
     );
-    setSortedAgreements(filtered);
+
+    setFilteredAgreements(filtered);
+    setPage(0); // Reset pagination when search changes
   };
 
   const handleChangePage = (event, newPage) => {
@@ -90,11 +89,12 @@ export const Agreements = () => {
                 value={query}
                 onChange={handleQueryChange}
                 variant="outlined"
+                placeholder="Type a business name..."
               />
             </Box>
             <Divider />
             <AgreementsTable
-              agreements={sortedAgreements.slice(
+              agreements={filteredAgreements.slice(
                 page * rowsPerPage,
                 (page + 1) * rowsPerPage
               )}
@@ -103,7 +103,7 @@ export const Agreements = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={sortedAgreements.length}
+              count={filteredAgreements.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
