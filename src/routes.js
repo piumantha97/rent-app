@@ -2,10 +2,15 @@ import { Navigate } from 'react-router-dom';
 import { Layout } from './components/layout';
 import { Icons } from './pages/icons';
 import { NotFound } from './pages/not-found';
-import { Orders } from './pages/orders';
+import { Agreements } from './pages/orders';
+import { Records } from './pages/records';
 import { Reports } from './pages/reports';
-import { Settings } from './pages/settings';
+// import {  AddAgreementForm } from './pages/addAgreements';
+import  MonthlyRentPayment  from './pages/monthlyRentPayment';
 import { Theme } from './pages/theme';
+import AddPlace from './pages/addPlace';
+import AddBusinessForm from './pages/addBusiness';
+import AddAgreementForm from './pages/addAgreements';
 
 export const routes = [
   {
@@ -22,11 +27,27 @@ export const routes = [
       },
       {
         path: 'orders',
-        element: <Orders />
+        element: <Agreements />
       },
       {
-        path: 'settings',
-        element: <Settings />
+        path: 'records',
+        element: <Records />
+      },
+      {
+        path: 'add-agreement',
+        element: < AddAgreementForm />
+      },
+      {
+        path: 'monthly-rent-payments',
+        element: <MonthlyRentPayment />
+      },
+      {
+        path: 'add-place',
+        element: <AddPlace />
+      },
+      {
+        path: 'add-business',
+        element: <AddBusinessForm />
       },
       {
         path: 'theme',

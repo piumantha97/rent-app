@@ -19,9 +19,29 @@ const items = [
     label: 'Orders'
   },
   {
-    href: '/dashboard/settings',
+    href: '/dashboard/records',
+    icon: ShoppingCartIcon,
+    label: 'Records'
+  },
+  {
+    href: '/dashboard/add-agreement',
     icon: CogIcon,
-    label: 'Settings'
+    label: 'Add Agreement'
+  },
+  {
+    href: '/dashboard/monthly-rent-payments',
+    icon: CogIcon,
+    label: 'Payments'
+  },
+  {
+    href: '/dashboard/add-place',
+    icon: CogIcon,
+    label: 'Add Place'
+  },
+  {
+    href: '/dashboard/add-business',
+    icon: CogIcon,
+    label: 'Add Business'
   },
   {
     href: '/dashboard/theme',

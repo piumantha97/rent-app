@@ -2,11 +2,12 @@ import { Helmet } from 'react-helmet';
 import { Box, Card, CardHeader, Container, Divider, Grid, Typography } from '@mui/material';
 import { SummaryItem } from '../components/reports/summary-item';
 import { PerformanceIndicators } from '../components/reports/performance-indicators';
-import { OrdersTable } from '../components/orders-table';
+// import { OrdersTable } from '../components/orders-table';
 import { Cube as CubeIcon } from '../icons/cube';
 import { ShoppingCart as ShoppingCartIcon } from '../icons/shopping-cart';
 import { Cash as CashIcon } from '../icons/cash';
 import { latestOrders } from '../__mocks__/reports';
+import { AgreementsTable } from '../components/agreements-table';
 
 const stats = [
   {
@@ -81,7 +82,7 @@ export const Reports = () => (
             <Card variant="outlined">
               <CardHeader title="Upcoming Reneval" />
               <Divider />
-              <OrdersTable orders={latestOrders} />
+              <AgreementsTable orders={latestOrders} />
             </Card>
           </Grid>
         </Grid>
