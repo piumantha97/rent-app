@@ -35,13 +35,20 @@ export const AgreementsTable = ({ agreements = [] }) => {
             <TableRow key={agreement._id}>
               {/* Business Name */}
               <TableCell>
-                {agreement.businessId?.businessName || "N/A"}
+                {agreement.businessDetails?.businessName || "N/A"}
               </TableCell>
 
               {/* Place */}
+
               <TableCell>
-                {agreement.businessId?.assignedPlace
-                  ? `${agreement.businessId.assignedPlace.building} - Floor ${agreement.businessId.assignedPlace.floor}`
+                {agreement.placeDetails?.building
+                  ? `${agreement.placeDetails.building} - Floor ${
+                      agreement.placeDetails.floor
+                    } ${
+                      agreement.placeDetails.partition
+                        ? `- Partition ${agreement.placeDetails.partition}`
+                        : ""
+                    }`
                   : "N/A"}
               </TableCell>
 
