@@ -65,14 +65,14 @@ export const AgreementsTable = ({ agreements = [] }) => {
               {/* Monthly Rent */}
               <TableCell>
                 {agreement.monthlyRent
-                  ? `$${agreement.monthlyRent.toLocaleString()}`
+                  ? `Rs ${agreement.monthlyRent.toLocaleString()}`
                   : "N/A"}
               </TableCell>
 
               {/* Key Money */}
               <TableCell>
                 {agreement.keyMoney
-                  ? `$${agreement.keyMoney.toLocaleString()}`
+                  ? `Rs ${agreement.keyMoney.toLocaleString()}`
                   : "N/A"}
               </TableCell>
             </TableRow>
