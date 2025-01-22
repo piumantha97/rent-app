@@ -33,11 +33,9 @@ export const RecordsTable = ({ records }) => {
         <TableBody>
   {records.map((record) => (
     <TableRow key={record._id}>
-      <TableCell>{record.businessId?.businessName || 'N/A'}</TableCell>
+      <TableCell>{record.businessDetails?.businessName || 'N/A'}</TableCell>
       <TableCell>
-        {record.businessId?.assignedPlace
-          ? `${record.businessId.assignedPlace.building} - Floor ${record.businessId.assignedPlace.floor}`
-          : 'N/A'}
+        {record.place}
       </TableCell>
       <TableCell>{record.month || 'N/A'}</TableCell>
       <TableCell>

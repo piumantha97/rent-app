@@ -28,6 +28,7 @@ const MonthlyRentPayment = () => {
         const response = await axios.get("http://localhost:5000/api/agreements");
         const formattedBusinesses = response.data.map((agreement) => ({
           id: agreement._id,
+          businessId:agreement.businessId,
           businessName: agreement.businessDetails.businessName,
           assignedPlaceName: agreement.businessId.assignedPlace,
           monthlyRent: agreement.monthlyRent,
@@ -45,6 +46,7 @@ const MonthlyRentPayment = () => {
   }, []);
 
   const handleBusinessChange = (businessId) => {
+    console.log("businessId--------------",businessId);
     const business = businesses.find((b) => b.id === businessId);
 
     if (business) {
@@ -61,7 +63,7 @@ const MonthlyRentPayment = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = {
-      businessId: selectedBusiness?.id,
+      businessId: selectedBusiness?.businessId,
       place: placeDetails,
       paymentAmount,
       paymentMethod: event.target.paymentMethod.value,
