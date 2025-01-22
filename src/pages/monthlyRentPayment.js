@@ -28,9 +28,10 @@ const MonthlyRentPayment = () => {
         const response = await axios.get("http://localhost:5000/api/agreements");
         const formattedBusinesses = response.data.map((agreement) => ({
           id: agreement._id,
-          businessName: agreement.businessId.businessName,
+          businessName: agreement.businessDetails.businessName,
           assignedPlaceName: agreement.businessId.assignedPlace,
           monthlyRent: agreement.monthlyRent,
+          place:`Building ${agreement.placeDetails.building}, Floor: ${agreement.placeDetails.floor}${placeDetails.partition ? `, Partition: ${agreement.placeDetails.partition}` : ''}`,
         }));
         setBusinesses(formattedBusinesses);
       } catch (err) {
@@ -48,7 +49,7 @@ const MonthlyRentPayment = () => {
 
     if (business) {
       setSelectedBusiness(business);
-      setPlaceDetails(business.assignedPlaceName || "N/A");
+      setPlaceDetails(business.place || "N/A");
       setPaymentAmount(business.monthlyRent || "");
     } else {
       setSelectedBusiness(null);
