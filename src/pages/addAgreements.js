@@ -49,6 +49,14 @@ const AddAgreementForm = () => {
       const response = await axios.post('http://localhost:5000/api/agreements', data);
       console.log('Response:', response.data);
       alert('Agreement added successfully!');
+
+  // Clear all fields after submission
+  setSelectedBusiness('');
+  setAgreementType('new'); // Reset to default value
+  setStartDate('');
+  setEndDate('');
+  setKeyMoney('');
+  setMonthlyRent('');
     } catch (err) {
       console.error('Error saving agreement:', err.message);
       alert('Failed to save agreement. Please try again.');

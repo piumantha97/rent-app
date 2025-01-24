@@ -28,10 +28,10 @@ export const Agreements = () => {
         const data = response.data;
 
         // Sort agreements by recent `endDate`
-        const sorted = data.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+        // const sorted = data.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
 
-        setAgreements(sorted);
-        setFilteredAgreements(sorted); // Initially, display all agreements
+        setAgreements(data);
+        setFilteredAgreements(data); // Initially, display all agreements
       } catch (error) {
         console.error("Error fetching agreements:", error);
       }

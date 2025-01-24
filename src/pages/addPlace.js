@@ -12,7 +12,7 @@ import {
   Divider
 } from '@mui/material';
 
-const buildings = ['A', 'B', 'C', 'D']; // Predefined buildings
+const buildings = ['A', 'B', 'C', 'D','Lankatilaka']; // Predefined buildings
 const floors = ['1', '2', '3', '4', '5']; // Fixed floors
 const partitions = ['P1', 'P2', 'P3', 'P4']; // Fixed partitions
 
@@ -40,6 +40,15 @@ const AddPlaceForm = () => {
       const response = await axios.post('http://localhost:5000/api/places', data);
       console.log('Response:', response.data);
       alert('Place added successfully!');
+
+       // Clear all fields after submission
+    setSelectedBuilding('');
+    setSelectedFloor('');
+    setSelectedPartition('');
+    setCurrentMeter('');
+    setWaterMeter('');
+    setSquareFeet('');
+    setAddress('');
     } catch (err) {
       console.error('Error saving place:', err.message);
       alert('Failed to add place. Please try again.');

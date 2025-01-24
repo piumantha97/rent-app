@@ -50,6 +50,14 @@ const AddBusinessForm = () => {
       const response = await axios.post('http://localhost:5000/api/businesses', data);
       console.log('Response:', response.data);
       alert('Business added successfully!');
+
+    // Clear all fields after submission
+    setSelectedPlace('');
+    setBusinessName('');
+    setContactNumber('');
+    setPersonName('');
+    setPersonAddress('');
+    setPersonId('');
     } catch (err) {
       console.error('Error saving business:', err.message);
       alert('Failed to add business. Please try again.');
