@@ -11,6 +11,7 @@ import { Theme } from './pages/theme';
 import AddPlace from './pages/addPlace';
 import AddBusinessForm from './pages/addBusiness';
 import AddAgreementForm from './pages/addAgreements';
+import {PaymentSummary} from './pages/paymentSummary';
 
 export const routes = [
   {
@@ -24,6 +25,10 @@ export const routes = [
       {
         path: '',
         element: <Reports />
+      },
+      {
+        path: 'payment-summary',
+        element: <PaymentSummary />
       },
       {
         path: 'orders',

@@ -31,23 +31,30 @@ export const RecordsTable = ({ records }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-  {records.map((record) => (
-    <TableRow key={record._id}>
-      <TableCell>{record.businessDetails?.businessName || 'N/A'}</TableCell>
-      <TableCell>
-        {record.place}
-      </TableCell>
-      <TableCell>{record.month || 'N/A'}</TableCell>
-      <TableCell>
-        {record.paymentDate ? format(new Date(record.paymentDate), 'dd MMM yyyy') : 'N/A'}
-      </TableCell>
-      <TableCell>{`$${record.paymentAmount.toFixed(2)}`}</TableCell>
-      <TableCell>{record.paymentMethod || 'N/A'}</TableCell>
-      <TableCell>{record.remarks || 'N/A'}</TableCell>
-    </TableRow>
-  ))}
-</TableBody>
+          {records.map((record) => (
+            <TableRow key={record._id}>
+              <TableCell>
+                {record.businessDetails?.businessName || "N/A"}
+              </TableCell>
+              <TableCell>{record.place}</TableCell>
+              <TableCell>{record.month || "N/A"}</TableCell>
+              <TableCell>
+                {record.paymentDate
+                  ? format(new Date(record.paymentDate), "dd MMM yyyy")
+                  : "N/A"}
+              </TableCell>
+              <TableCell>
+                {`Rs ${new Intl.NumberFormat("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(record.paymentAmount)}`}
+              </TableCell>
 
+              <TableCell>{record.paymentMethod || "N/A"}</TableCell>
+              <TableCell>{record.remarks || "N/A"}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
       </Table>
     </Scrollbar>
   );

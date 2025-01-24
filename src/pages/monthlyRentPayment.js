@@ -19,6 +19,8 @@ const MonthlyRentPayment = () => {
   const [placeDetails, setPlaceDetails] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
   const [loadingBusinesses, setLoadingBusinesses] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(""); // State for payment method
+
 
   // Fetch agreements on component mount
   useEffect(() => {
@@ -76,6 +78,14 @@ const MonthlyRentPayment = () => {
       const response = await axios.post("http://localhost:5000/api/payments", data);
       console.log("Payment submitted successfully:", response.data);
       alert("Payment submitted successfully!");
+
+          // Clear fields after successful submission
+    setSelectedBusiness(null);
+    setPlaceDetails("");
+    setPaymentAmount("");
+    setPaymentMethod(""); // Reset payment method dropdown
+    event.target.reset(); // Reset the form
+
     } catch (err) {
       console.error("Error submitting payment:", err.message);
       alert("Failed to submit payment. Please try again.");
@@ -101,6 +111,7 @@ const MonthlyRentPayment = () => {
                 variant="outlined"
                 required
                 disabled={loadingBusinesses}
+                value={selectedBusiness ? selectedBusiness.id : ""} // Explicitly bind value to selectedBusiness
               >
                 {businesses.map((business) => (
                   <MenuItem key={business.id} value={business.id}>
@@ -157,6 +168,8 @@ const MonthlyRentPayment = () => {
                 select
                 variant="outlined"
                 required
+                value={paymentMethod} // Bind value to state
+                onChange={(e) => setPaymentMethod(e.target.value)} // Update state on
               >
                 {paymentMethods.map((method) => (
                   <MenuItem key={method} value={method}>

@@ -14,6 +14,11 @@ const items = [
     label: 'Home'
   },
   {
+    href: '/dashboard/payment-summary',
+    icon: ShoppingCartIcon,
+    label: 'Payment Summary'
+  },
+  {
     href: '/dashboard/orders',
     icon: ShoppingCartIcon,
     label: 'Orders'
