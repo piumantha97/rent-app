@@ -21,11 +21,13 @@ const AddAgreementForm = () => {
   const [keyMoney, setKeyMoney] = useState('');
   const [monthlyRent, setMonthlyRent] = useState('');
 
+
+  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
   // Load businesses from the API
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/businesses');
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`);
         setBusinesses(response.data);
       } catch (err) {
         console.error('Error fetching businesses:', err.message);
@@ -46,7 +48,7 @@ const AddAgreementForm = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/api/agreements', data);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/agreements`, data);
       console.log('Response:', response.data);
       alert('Agreement added successfully!');
 

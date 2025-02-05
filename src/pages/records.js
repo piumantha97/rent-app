@@ -27,7 +27,7 @@ export const Records = () => {
     // Fetch businesses
     const fetchBusinesses = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/businesses");
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`);
         setBusinesses(response.data);
       } catch (error) {
         console.error("Error fetching businesses:", error);
@@ -37,7 +37,7 @@ export const Records = () => {
     // Fetch payments
     const fetchPayments = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/payments");
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/payments`);
         setPayments(response.data);
         setFilteredPayments(response.data); // Initial load shows all payments
       } catch (error) {

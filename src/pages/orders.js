@@ -24,7 +24,7 @@ export const Agreements = () => {
   useEffect(() => {
     const fetchAgreements = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/agreements");
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/agreements`);
         const data = response.data;
 
         // Sort agreements by recent `endDate`

@@ -25,7 +25,7 @@ const AddBusinessForm = () => {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/places');
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/places`);
         setPlaces(response.data);
       } catch (err) {
         console.error('Error fetching places:', err.message);
@@ -47,7 +47,7 @@ const AddBusinessForm = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/api/businesses', data);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`, data);
       console.log('Response:', response.data);
       alert('Business added successfully!');
 

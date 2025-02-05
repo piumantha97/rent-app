@@ -27,7 +27,7 @@ const MonthlyRentPayment = () => {
     const fetchBusinesses = async () => {
       setLoadingBusinesses(true);
       try {
-        const response = await axios.get("http://localhost:5000/api/agreements");
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/agreements`);
         const formattedBusinesses = response.data.map((agreement) => ({
           id: agreement._id,
           businessId:agreement.businessId,
@@ -75,7 +75,7 @@ const MonthlyRentPayment = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/api/payments", data);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}api/payments`, data);
       console.log("Payment submitted successfully:", response.data);
       alert("Payment submitted successfully!");
 
