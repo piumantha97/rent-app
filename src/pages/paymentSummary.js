@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import {
   Box,
@@ -11,153 +11,151 @@ import {
   TextField,
   MenuItem,
 } from "@mui/material";
-import { RecordsTable } from "../components/records-table";
-// import { PaymentSummaryTable } from "../components/payment-summary-table";
-import dayjs from "dayjs"; // For date manipulation
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 import axios from "axios";
+import { RecordsTable } from "../components/records-table";
 
 export const PaymentSummary = () => {
-  const [businesses, setBusinesses] = useState([]);
-  const [selectedBusiness, setSelectedBusiness] = useState("");
+  const navigate = useNavigate();
+
   const [payments, setPayments] = useState([]);
-  const [filteredPayments, setFilteredPayments] = useState([]);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(0);
+  const [businesses, setBusinesses] = useState([]);
+
+  const [selectedBusiness, setSelectedBusiness] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState("");
 
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+
   useEffect(() => {
-    // Fetch businesses
-    const fetchBusinesses = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`);
-        setBusinesses(response.data);
-      } catch (error) {
-        console.error("Error fetching businesses:", error);
-      }
-    };
-
-    // Fetch payments
-    const fetchPayments = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/payments`);
-        setPayments(response.data);
-        setFilteredPayments(response.data); // Initial load shows all payments
-      } catch (error) {
-        console.error("Error fetching payments:", error);
-      }
-    };
-
-    fetchBusinesses();
     fetchPayments();
+    fetchBusinesses();
   }, []);
 
-  const handleBusinessFilterChange = (businessId) => {
-    setSelectedBusiness(businessId);
-    filterPayments(businessId, selectedMonthYear);
+  const fetchPayments = async () => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/payments`);
+      setPayments(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleMonthYearChange = (value) => {
-    setSelectedMonthYear(value);
-    filterPayments(selectedBusiness, value);
+  const fetchBusinesses = async () => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`);
+      setBusinesses(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const filterPayments = (businessId, monthYear) => {
-    let filtered = payments;
-
-    // Filter by business
-    if (businessId) {
-      filtered = filtered.filter(
-        (payment) => payment.businessId?._id === businessId
-      );
+  // ✅ FILTER LOGIC (clean)
+const filteredPayments = useMemo(() => {
+  return payments.filter((payment) => {
+    if (selectedBusiness) {
+      if (payment.businessDetails?._id !== selectedBusiness) {
+        return false;
+      }
     }
 
-    // Filter by month and year
-    if (monthYear) {
-      const [year, month] = monthYear.split("-");
-      filtered = filtered.filter((payment) => {
-        const paymentDate = dayjs(payment.paymentDate);
-        return (
-          paymentDate.year() === parseInt(year) &&
-          paymentDate.month() === parseInt(month) - 1
-        );
-      });
+    if (selectedMonthYear) {
+      const [year, month] = selectedMonthYear.split("-");
+      const paymentDate = dayjs(payment.paymentDate);
+
+      if (
+        paymentDate.year() !== parseInt(year, 10) ||
+        paymentDate.month() !== parseInt(month, 10) - 1
+      ) {
+        return false;
+      }
     }
 
-    setFilteredPayments(filtered);
-  };
+    return true;
+  });
+}, [payments, selectedBusiness, selectedMonthYear]);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  const paginatedPayments = useMemo(() => {
+    const start = page * rowsPerPage;
+    return filteredPayments.slice(start, start + rowsPerPage);
+  }, [filteredPayments, page, rowsPerPage]);
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+  const handleAddPayment = () => {
+    navigate("/payments/add");
   };
 
   return (
     <>
       <Helmet>
-        <title>Records | Dashboard</title>
+        <title>Payment Records</title>
       </Helmet>
+
       <Box sx={{ backgroundColor: "background.default", pb: 3, pt: 8 }}>
         <Container maxWidth="lg">
-          <Box sx={{ alignItems: "center", display: "flex", mb: 3 }}>
-            <Typography color="textPrimary" variant="h4">
-              Payment Records
-            </Typography>
+
+          <Box sx={{ display: "flex", mb: 3 }}>
+            <Typography variant="h4">Payment Records</Typography>
             <Box sx={{ flexGrow: 1 }} />
-            <Button color="primary" size="large" variant="contained">
+            <Button variant="contained" onClick={handleAddPayment}>
               Add Payment
             </Button>
           </Box>
-          <Card variant="outlined">
-            <Box sx={{ display: "flex", p: 2, gap: 2 }}>
-              {/* Business Filter */}
+
+          <Card>
+
+            {/* Filters */}
+            <Box sx={{ display: "flex", gap: 2, p: 2 }}>
               <TextField
                 fullWidth
                 select
                 label="Filter by Business"
                 value={selectedBusiness}
-                onChange={(e) => handleBusinessFilterChange(e.target.value)}
-                variant="outlined"
+                onChange={(e) => {
+                  setSelectedBusiness(e.target.value);
+                  setPage(0);
+                }}
               >
-                <MenuItem value="">All Businesses</MenuItem>
-                {businesses.map((business) => (
-                  <MenuItem key={business._id} value={business._id}>
-                    {business.businessName}
+                <MenuItem value="">All</MenuItem>
+                {businesses.map((b) => (
+                  <MenuItem key={b._id} value={b._id}>
+                    {b.businessName}
                   </MenuItem>
                 ))}
               </TextField>
 
-              {/* Month and Year Filter */}
               <TextField
                 fullWidth
                 type="month"
-                label="Filter by Month and Year"
+                label="Filter by Month"
                 value={selectedMonthYear}
-                onChange={(e) => handleMonthYearChange(e.target.value)}
-                variant="outlined"
+                onChange={(e) => {
+                  setSelectedMonthYear(e.target.value);
+                  setPage(0);
+                }}
                 InputLabelProps={{ shrink: true }}
               />
             </Box>
+
             <Divider />
-            <RecordsTable
-              records={filteredPayments.slice(
-                page * rowsPerPage,
-                (page + 1) * rowsPerPage
-              )}
-            />
+
+            {/* Table */}
+            <RecordsTable records={paginatedPayments} />
+
             <Divider />
+
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={filteredPayments.length}
-              rowsPerPage={rowsPerPage}
               page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(_, p) => setPage(p)}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+              }}
             />
+
           </Card>
         </Container>
       </Box>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import {
   Box,
@@ -11,58 +11,64 @@ import {
   TextField,
   MenuItem,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { RecordsTable } from "../components/records-table";
-
 import axios from "axios";
 
 export const Records = () => {
+  const navigate = useNavigate();
+
   const [businesses, setBusinesses] = useState([]);
   const [selectedBusiness, setSelectedBusiness] = useState("");
   const [payments, setPayments] = useState([]);
-  const [filteredPayments, setFilteredPayments] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fetch businesses
-    const fetchBusinesses = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`);
-        setBusinesses(response.data);
+        const [businessResponse, paymentResponse] = await Promise.all([
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/payments`),
+        ]);
+
+        setBusinesses(businessResponse.data || []);
+        setPayments(paymentResponse.data || []);
       } catch (error) {
-        console.error("Error fetching businesses:", error);
+        console.error("Error fetching records data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    // Fetch payments
-    const fetchPayments = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/payments`);
-        setPayments(response.data);
-        setFilteredPayments(response.data); // Initial load shows all payments
-      } catch (error) {
-        console.error("Error fetching payments:", error);
-      }
-    };
-
-    fetchBusinesses();
-    fetchPayments();
+    fetchData();
   }, []);
+
+  const filteredPayments = useMemo(() => {
+    if (!selectedBusiness) return payments;
+
+    return payments.filter((payment) => {
+      return (
+        payment.businessId?._id === selectedBusiness ||
+        payment.businessDetails?._id === selectedBusiness
+      );
+    });
+  }, [payments, selectedBusiness]);
+
+  const paginatedPayments = useMemo(() => {
+    const start = page * rowsPerPage;
+    const end = start + rowsPerPage;
+    return filteredPayments.slice(start, end);
+  }, [filteredPayments, page, rowsPerPage]);
 
   const handleBusinessFilterChange = (businessId) => {
     setSelectedBusiness(businessId);
-
-    if (businessId) {
-      const filtered = payments.filter(
-        (payment) => payment.businessId?._id === businessId
-      );
-      setFilteredPayments(filtered);
-    } else {
-      setFilteredPayments(payments); // Show all if no business is selected
-    }
+    setPage(0);
   };
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (_event, newPage) => {
     setPage(newPage);
   };
 
@@ -71,11 +77,16 @@ export const Records = () => {
     setPage(0);
   };
 
+  const handleAddPayment = () => {
+    navigate("/payments/add");
+  };
+
   return (
     <>
       <Helmet>
         <title>Records | Dashboard</title>
       </Helmet>
+
       <Box sx={{ backgroundColor: "background.default", pb: 3, pt: 8 }}>
         <Container maxWidth="lg">
           <Box sx={{ alignItems: "center", display: "flex", mb: 3 }}>
@@ -83,13 +94,18 @@ export const Records = () => {
               Payment Records
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
-            <Button color="primary" size="large" variant="contained">
+            <Button
+              color="primary"
+              size="large"
+              variant="contained"
+              onClick={handleAddPayment}
+            >
               Add Payment
             </Button>
           </Box>
+
           <Card variant="outlined">
             <Box sx={{ display: "flex", p: 2 }}>
-              {/* Business Filter */}
               <TextField
                 fullWidth
                 select
@@ -106,14 +122,19 @@ export const Records = () => {
                 ))}
               </TextField>
             </Box>
+
             <Divider />
-            <RecordsTable
-              records={filteredPayments.slice(
-                page * rowsPerPage,
-                (page + 1) * rowsPerPage
-              )}
-            />
+
+            {loading ? (
+              <Box sx={{ p: 3 }}>
+                <Typography>Loading payment records...</Typography>
+              </Box>
+            ) : (
+              <RecordsTable records={paginatedPayments} />
+            )}
+
             <Divider />
+
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"

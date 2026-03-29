@@ -12,6 +12,7 @@ import AddPlace from './pages/addPlace';
 import AddBusinessForm from './pages/addBusiness';
 import AddAgreementForm from './pages/addAgreements';
 import {PaymentSummary} from './pages/paymentSummary';
+import { UnpaidRentReport } from './pages/unpaidRentReport'; 
 
 export const routes = [
   {
@@ -65,6 +66,10 @@ export const routes = [
       {
         path: '*',
         element: <Navigate to="/404" />
+      },
+      {
+        path: 'unpaid-rent',
+        element: <UnpaidRentReport/>
       }
     ]
   },

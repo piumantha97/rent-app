@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  Box,
   Button,
   Card,
   Container,
@@ -9,130 +8,154 @@ import {
   MenuItem,
   TextField,
   Typography,
+  Divider,
 } from "@mui/material";
 
 const paymentMethods = ["Cash", "Bank Transfer", "Credit Card", "Other"];
 
 const MonthlyRentPayment = () => {
-  const [businesses, setBusinesses] = useState([]);
-  const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [agreements, setAgreements] = useState([]);
+  const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [placeDetails, setPlaceDetails] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
-  const [loadingBusinesses, setLoadingBusinesses] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(""); // State for payment method
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [loading, setLoading] = useState(false);
 
-
-  // Fetch agreements on component mount
   useEffect(() => {
-    const fetchBusinesses = async () => {
-      setLoadingBusinesses(true);
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/agreements`);
-        const formattedBusinesses = response.data.map((agreement) => ({
-          id: agreement._id,
-          businessId:agreement.businessId,
-          businessName: agreement.businessDetails.businessName,
-          assignedPlaceName: agreement.businessId.assignedPlace,
-          monthlyRent: agreement.monthlyRent,
-          place:`Building ${agreement.placeDetails.building}, Floor: ${agreement.placeDetails.floor}${placeDetails.partition ? `, Partition: ${agreement.placeDetails.partition}` : ''}`,
-        }));
-        setBusinesses(formattedBusinesses);
-      } catch (err) {
-        console.error("Error fetching businesses:", err.message);
-      } finally {
-        setLoadingBusinesses(false);
-      }
-    };
-
-    fetchBusinesses();
+    fetchAgreements();
   }, []);
 
-  const handleBusinessChange = (businessId) => {
-    console.log("businessId--------------",businessId);
-    const business = businesses.find((b) => b.id === businessId);
+  const fetchAgreements = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/agreements`
+      );
 
-    if (business) {
-      setSelectedBusiness(business);
-      setPlaceDetails(business.place || "N/A");
-      setPaymentAmount(business.monthlyRent || "");
+      const formatted = (res.data || []).map((agreement) => ({
+        id: agreement._id,
+        agreementId: agreement._id,
+        businessName: agreement.businessDetails?.businessName || "N/A",
+        monthlyRent: agreement.monthlyRent || "",
+        place: agreement.placeDetails?.unitCode
+          ? agreement.placeDetails.unitCode
+          : agreement.placeDetails
+          ? `Building ${agreement.placeDetails.building}, Floor ${agreement.placeDetails.floor}${
+              agreement.placeDetails.partition
+                ? ` - ${agreement.placeDetails.partition}`
+                : ""
+            }`
+          : "N/A",
+      }));
+
+      setAgreements(formatted);
+    } catch (err) {
+      console.error("Error fetching agreements:", err.message);
+      alert("Failed to load agreements");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAgreementChange = (id) => {
+    const agreement = agreements.find((a) => a.id === id);
+
+    if (agreement) {
+      setSelectedAgreement(agreement);
+      setPlaceDetails(agreement.place || "N/A");
+      setPaymentAmount(agreement.monthlyRent || "");
     } else {
-      setSelectedBusiness(null);
+      setSelectedAgreement(null);
       setPlaceDetails("");
       setPaymentAmount("");
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!selectedAgreement) {
+      alert("Please select a tenant");
+      return;
+    }
+
+    if (!paymentMethod) {
+      alert("Please select a payment method");
+      return;
+    }
+
     const data = {
-      businessId: selectedBusiness?.businessId,
-      place: placeDetails,
-      paymentAmount,
-      paymentMethod: event.target.paymentMethod.value,
-      paymentDate: event.target.paymentDate.value,
-      month: event.target.month.value,
-      remarks: event.target.remarks.value,
+      agreementId: selectedAgreement.agreementId,
+      paymentAmount: Number(paymentAmount),
+      paymentMethod,
+      paymentDate: e.target.paymentDate.value,
+      month: e.target.month.value,
+      remarks: e.target.remarks.value,
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}api/payments`, data);
-      console.log("Payment submitted successfully:", response.data);
+      await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/payments`,
+        data
+      );
+
       alert("Payment submitted successfully!");
 
-          // Clear fields after successful submission
-    setSelectedBusiness(null);
-    setPlaceDetails("");
-    setPaymentAmount("");
-    setPaymentMethod(""); // Reset payment method dropdown
-    event.target.reset(); // Reset the form
-
+      setSelectedAgreement(null);
+      setPlaceDetails("");
+      setPaymentAmount("");
+      setPaymentMethod("");
+      e.target.reset();
     } catch (err) {
       console.error("Error submitting payment:", err.message);
-      alert("Failed to submit payment. Please try again.");
+      alert("Failed to submit payment");
     }
   };
 
   return (
     <Container maxWidth="md">
-      <Card elevation={3} sx={{ p: 4, mt: 4 }}>
-        <Typography variant="h4" color="primary" textAlign="center" sx={{ mb: 3 }}>
+      <Card elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
+        <Typography
+          variant="h4"
+          textAlign="center"
+          color="primary"
+          sx={{ mb: 3 }}
+        >
           Monthly Rent Payment
         </Typography>
+
+        <Divider sx={{ mb: 4 }} />
+
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            {/* Business Selection */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Select Business"
-                name="businessId"
+                label="Select Tenant"
                 select
-                onChange={(e) => handleBusinessChange(e.target.value)}
-                variant="outlined"
+                value={selectedAgreement ? selectedAgreement.id : ""}
+                onChange={(e) => handleAgreementChange(e.target.value)}
                 required
-                disabled={loadingBusinesses}
-                value={selectedBusiness ? selectedBusiness.id : ""} // Explicitly bind value to selectedBusiness
+                disabled={loading}
               >
-                {businesses.map((business) => (
-                  <MenuItem key={business.id} value={business.id}>
-                    {business.businessName}
+                {agreements.map((agreement) => (
+                  <MenuItem key={agreement.id} value={agreement.id}>
+                    {agreement.businessName}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
 
-            {/* Place Details */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Place Details"
+                label="Place"
                 value={placeDetails}
                 variant="outlined"
                 disabled
               />
             </Grid>
 
-            {/* Payment Month */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -140,36 +163,36 @@ const MonthlyRentPayment = () => {
                 name="month"
                 type="month"
                 variant="outlined"
+                InputLabelProps={{ shrink: true }}
                 required
               />
             </Grid>
 
-            {/* Payment Amount */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Payment Amount"
-                name="paymentAmount"
-                value={paymentAmount || ""}
+                value={paymentAmount}
                 onChange={(e) => setPaymentAmount(e.target.value)}
                 type="number"
                 variant="outlined"
                 required
-                disabled
+                inputProps={{
+                  min: 0,
+                  step: "any",
+                }}
               />
             </Grid>
 
-            {/* Payment Method */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Payment Method"
-                name="paymentMethod"
                 select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
                 variant="outlined"
                 required
-                value={paymentMethod} // Bind value to state
-                onChange={(e) => setPaymentMethod(e.target.value)} // Update state on
               >
                 {paymentMethods.map((method) => (
                   <MenuItem key={method} value={method}>
@@ -179,7 +202,6 @@ const MonthlyRentPayment = () => {
               </TextField>
             </Grid>
 
-            {/* Payment Date */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -192,7 +214,6 @@ const MonthlyRentPayment = () => {
               />
             </Grid>
 
-            {/* Remarks */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -204,14 +225,13 @@ const MonthlyRentPayment = () => {
               />
             </Grid>
 
-            {/* Submit Button */}
             <Grid item xs={12}>
               <Button
                 fullWidth
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={!selectedBusiness}
+                disabled={!selectedAgreement || loading}
               >
                 Submit Payment
               </Button>

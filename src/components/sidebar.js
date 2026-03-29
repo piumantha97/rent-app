@@ -63,6 +63,11 @@ const items = [
     icon: UserIcon,
     label: '404'
   },
+  {
+    href: '/dashboard/unpaid-rent',
+    icon: UserIcon,
+    label: 'Unpaid Rent'
+  },
 ];
 
 export const Sidebar = () => {

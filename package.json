@@ -35,7 +35,7 @@
     "@mui/icons-material": "^5.8.0",
     "@mui/lab": "^5.0.0-alpha.83",
     "@mui/material": "^5.8.1",
-    "apexcharts": "^3.35.3",
+    "apexcharts": "^5.10.4",
     "axios": "^1.7.9",
     "date-fns": "^2.28.0",
     "dayjs": "^1.11.13",
@@ -43,7 +43,7 @@
     "history": "^5.3.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
-    "react-apexcharts": "^1.4.0",
+    "react-apexcharts": "^1.8.0",
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.3.0",
@@ -54,7 +54,6 @@
   },
   "devDependencies": {
     "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-react": "^1.1.7",
-    "eslint-config-react-app": "^7.0.1"
+    "eslint-config-react": "^1.1.7"
   }
 }

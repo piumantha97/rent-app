@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  Box,
   Button,
   Card,
   Container,
@@ -14,51 +13,57 @@ import {
 
 const AddAgreementForm = () => {
   const [businesses, setBusinesses] = useState([]);
+  const [places, setPlaces] = useState([]);
+
   const [selectedBusiness, setSelectedBusiness] = useState('');
-  const [agreementType, setAgreementType] = useState('new'); // "new" or "renewal"
+  const [selectedPlace, setSelectedPlace] = useState('');
+  const [agreementType, setAgreementType] = useState('new');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [keyMoney, setKeyMoney] = useState('');
   const [monthlyRent, setMonthlyRent] = useState('');
 
-
-  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
-  // Load businesses from the API
   useEffect(() => {
-    const fetchBusinesses = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`);
-        setBusinesses(response.data);
+        const [businessRes, placeRes] = await Promise.all([
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/businesses`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/places`)
+        ]);
+
+        setBusinesses(businessRes.data || []);
+        setPlaces(placeRes.data || []);
       } catch (err) {
-        console.error('Error fetching businesses:', err.message);
-        alert('Failed to fetch businesses.');
+        console.error('Error loading data:', err.message);
+        alert('Failed to load businesses or places');
       }
     };
-    fetchBusinesses();
+
+    fetchData();
   }, []);
 
   const handleSubmit = async () => {
     const data = {
       businessId: selectedBusiness,
+      placeId: selectedPlace,
       agreementType,
       startDate,
       endDate,
-      keyMoney: agreementType === 'new' ? keyMoney : null, // Key money only for new agreements
+      keyMoney: agreementType === 'new' ? keyMoney : null,
       monthlyRent
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/agreements`, data);
-      console.log('Response:', response.data);
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/agreements`, data);
       alert('Agreement added successfully!');
 
-  // Clear all fields after submission
-  setSelectedBusiness('');
-  setAgreementType('new'); // Reset to default value
-  setStartDate('');
-  setEndDate('');
-  setKeyMoney('');
-  setMonthlyRent('');
+      setSelectedBusiness('');
+      setSelectedPlace('');
+      setAgreementType('new');
+      setStartDate('');
+      setEndDate('');
+      setKeyMoney('');
+      setMonthlyRent('');
     } catch (err) {
       console.error('Error saving agreement:', err.message);
       alert('Failed to save agreement. Please try again.');
@@ -72,121 +77,124 @@ const AddAgreementForm = () => {
           Add New Agreement
         </Typography>
         <Divider sx={{ mb: 4 }} />
-        <form onSubmit={(e) => e.preventDefault()}>
-          <Grid container spacing={3}>
-            {/* Select Business */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Select Business"
-                select
-                value={selectedBusiness}
-                onChange={(e) => setSelectedBusiness(e.target.value)}
-                variant="outlined"
-                required
-              >
-                {businesses.map((business) => (
-                  <MenuItem key={business._id} value={business._id}>
-                    {business.businessName} ({business.personName})
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
 
-            {/* Agreement Type */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Agreement Type"
-                select
-                value={agreementType}
-                onChange={(e) => setAgreementType(e.target.value)}
-                variant="outlined"
-                required
-              >
-                <MenuItem value="new">New</MenuItem>
-                <MenuItem value="renewal">Renewal</MenuItem>
-              </TextField>
-            </Grid>
-
-            {/* Start Date */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Start Date"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                variant="outlined"
-                required
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-
-            {/* End Date */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="End Date"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                variant="outlined"
-                required
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-
-            {/* Key Money (only for new agreements) */}
-            {agreementType === 'new' && (
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Key Money"
-                  value={keyMoney}
-                  onChange={(e) => setKeyMoney(e.target.value)}
-                  variant="outlined"
-                  type="number"
-                  required
-                  inputProps={{
-                    min: 0,
-                    step: "any"
-                  }}
-                />
-              </Grid>
-            )}
-
-            {/* Monthly Rent */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Monthly Rent"
-                value={monthlyRent}
-                onChange={(e) => setMonthlyRent(e.target.value)}
-                variant="outlined"
-                type="number"
-                required
-                inputProps={{
-                  min: 0,
-                  step: "any"
-                }}
-              />
-            </Grid>
-
-            {/* Submit Button */}
-            <Grid item xs={12}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                disabled={!selectedBusiness || !startDate || !endDate || !monthlyRent || (agreementType === 'new' && !keyMoney)}
-              >
-                Save Agreement
-              </Button>
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Select Business"
+              select
+              value={selectedBusiness}
+              onChange={(e) => setSelectedBusiness(e.target.value)}
+              required
+            >
+              {businesses.map((business) => (
+                <MenuItem key={business._id} value={business._id}>
+                  {business.businessName} ({business.personName})
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
-        </form>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Select Place"
+              select
+              value={selectedPlace}
+              onChange={(e) => setSelectedPlace(e.target.value)}
+              required
+            >
+              {places.map((place) => (
+                <MenuItem key={place._id} value={place._id}>
+                  {place.unitCode || `${place.building}-${place.floor}${place.partition ? `-${place.partition}` : ''}`}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Agreement Type"
+              select
+              value={agreementType}
+              onChange={(e) => setAgreementType(e.target.value)}
+              required
+            >
+              <MenuItem value="new">New</MenuItem>
+              <MenuItem value="renewal">Renewal</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Start Date"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="End Date"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+          </Grid>
+
+          {agreementType === 'new' && (
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Key Money"
+                type="number"
+                value={keyMoney}
+                onChange={(e) => setKeyMoney(e.target.value)}
+                inputProps={{ min: 0, step: 'any' }}
+                required
+              />
+            </Grid>
+          )}
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Monthly Rent"
+              type="number"
+              value={monthlyRent}
+              onChange={(e) => setMonthlyRent(e.target.value)}
+              inputProps={{ min: 0, step: 'any' }}
+              required
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={handleSubmit}
+              disabled={
+                !selectedBusiness ||
+                !selectedPlace ||
+                !startDate ||
+                !endDate ||
+                !monthlyRent ||
+                (agreementType === 'new' && !keyMoney)
+              }
+            >
+              Save Agreement
+            </Button>
+          </Grid>
+        </Grid>
       </Card>
     </Container>
   );
