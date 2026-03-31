@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet';
-import { Box, Card, CardHeader, Container, Divider, Grid, Typography } from '@mui/material';
+import { Box, Card, CardHeader, Container, Divider, Grid, Typography,Button } from '@mui/material';
 import { SummaryItem } from '../components/reports/summary-item';
 import { PerformanceIndicators } from '../components/reports/performance-indicators';
 // import { OrdersTable } from '../components/orders-table';
@@ -27,7 +27,12 @@ const stats = [
   }
 ];
 
-export const Reports = () => (
+export const Reports = () => {
+const handleLogout = () => {
+  localStorage.removeItem('token');
+  window.location.href = '/login';
+};
+  return(
   <>
     <Helmet>
       <title>Reports | Carpatin Dashboard</title>
@@ -44,17 +49,24 @@ export const Reports = () => (
           container
           spacing={3}
         >
-          <Grid
-            item
-            xs={12}
-          >
-            <Typography
-              color="textPrimary"
-              variant="h4"
-            >
-              Reports
-            </Typography>
-          </Grid>
+
+<Grid item xs={12}>
+  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Typography color="textPrimary" variant="h4">
+      Reports
+    </Typography>
+
+    <Box sx={{ flexGrow: 1 }} />
+
+    <Button
+      variant="outlined"
+      color="error"
+      onClick={handleLogout}
+    >
+      Logout
+    </Button>
+  </Box>
+</Grid>
           {stats.map((item) => (
             <Grid
               item
@@ -89,4 +101,6 @@ export const Reports = () => (
       </Container>
     </Box>
   </>
+  
 );
+}
