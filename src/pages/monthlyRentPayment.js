@@ -29,14 +29,43 @@ const MonthlyRentPayment = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/agreements`
+        `${process.env.REACT_APP_BACKEND_URL}/api/agreements/active/list`
       );
 
-      const formatted = (res.data || []).map((agreement) => ({
+      const raw = res.data || [];
+
+      // keep only latest agreement per place
+      const latestByPlace = new Map();
+
+      raw.forEach((agreement) => {
+        const placeKey =
+          agreement.placeId ||
+          agreement.placeDetails?._id ||
+          agreement.placeDetails?.unitCode ||
+          agreement._id;
+
+        const existing = latestByPlace.get(placeKey);
+
+        if (!existing) {
+          latestByPlace.set(placeKey, agreement);
+        } else {
+          const existingEnd = new Date(existing.endDate);
+          const currentEnd = new Date(agreement.endDate);
+
+          if (currentEnd > existingEnd) {
+            latestByPlace.set(placeKey, agreement);
+          }
+        }
+      });
+
+      const formatted = Array.from(latestByPlace.values()).map((agreement) => ({
         id: agreement._id,
         agreementId: agreement._id,
         businessName: agreement.businessDetails?.businessName || "N/A",
+        personName: agreement.businessDetails?.personName || "",
         monthlyRent: agreement.monthlyRent || "",
+        startDate: agreement.startDate,
+        endDate: agreement.endDate,
         place: agreement.placeDetails?.unitCode
           ? agreement.placeDetails.unitCode
           : agreement.placeDetails
@@ -131,7 +160,7 @@ const MonthlyRentPayment = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Select Tenant"
+                label="Select Current Agreement"
                 select
                 value={selectedAgreement ? selectedAgreement.id : ""}
                 onChange={(e) => handleAgreementChange(e.target.value)}
@@ -140,7 +169,8 @@ const MonthlyRentPayment = () => {
               >
                 {agreements.map((agreement) => (
                   <MenuItem key={agreement.id} value={agreement.id}>
-                    {agreement.businessName}
+                    {agreement.businessName} - {agreement.place} - ends{" "}
+                    {new Date(agreement.endDate).toLocaleDateString()}
                   </MenuItem>
                 ))}
               </TextField>
