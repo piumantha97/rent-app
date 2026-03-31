@@ -21,7 +21,7 @@ const items = [
   {
     href: '/dashboard/orders',
     icon: ShoppingCartIcon,
-    label: 'Orders'
+    label: 'Agreements'
   },
   {
     href: '/dashboard/records',
@@ -48,25 +48,30 @@ const items = [
     icon: CogIcon,
     label: 'Add Business'
   },
-  {
-    href: '/dashboard/theme',
-    icon: DocumentTextIcon,
-    label: 'Theme'
-  },
-  {
-    href: '/dashboard/icons',
-    icon: StarIcon,
-    label: 'Icons'
-  },
-  {
-    href: '/404',
-    icon: UserIcon,
-    label: '404'
-  },
+  // {
+  //   href: '/dashboard/theme',
+  //   icon: DocumentTextIcon,
+  //   label: 'Theme'
+  // },
+  // {
+  //   href: '/dashboard/icons',
+  //   icon: StarIcon,
+  //   label: 'Icons'
+  // },
+  // {
+  //   href: '/404',
+  //   icon: UserIcon,
+  //   label: '404'
+  // },
   {
     href: '/dashboard/unpaid-rent',
     icon: UserIcon,
     label: 'Unpaid Rent'
+  },
+  {
+    href: '/dashboard/monthly-income',
+    icon: UserIcon,
+    label: 'Income'
   },
 ];
 

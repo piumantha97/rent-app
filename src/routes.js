@@ -13,6 +13,7 @@ import AddBusinessForm from './pages/addBusiness';
 import AddAgreementForm from './pages/addAgreements';
 import {PaymentSummary} from './pages/paymentSummary';
 import { UnpaidRentReport } from './pages/unpaidRentReport'; 
+import { MonthlyIncomeReport } from './pages/monthlyIncomeReport';
 
 export const routes = [
   {
@@ -64,8 +65,8 @@ export const routes = [
         element: <Icons />
       },
       {
-        path: '*',
-        element: <Navigate to="/404" />
+        path: 'monthly-income',
+        element: <MonthlyIncomeReport/>
       },
       {
         path: 'unpaid-rent',
