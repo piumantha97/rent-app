@@ -73,6 +73,11 @@ const items = [
     icon: UserIcon,
     label: 'Income'
   },
+  {
+    href: '/dashboard/business-income',
+    icon: UserIcon,
+    label: 'Business Income'
+  },
 ];
 
 export const Sidebar = () => {
